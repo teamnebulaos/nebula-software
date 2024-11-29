@@ -1,0 +1,56 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: 
+      image: archlinux:base-devel
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm git meson ninja gtk4 libadwaita python python-gobject python-requests
+
+      - name: Build package
+        run: |
+          chmod -R 777 .
+          useradd builder -m
+          chown -R builder:builder .
+          su builder -c 'makepkg -s --noconfirm'
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Package
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./*.pkg.tar.zst
+          asset_name: nebula-software-${{ github.ref_name }}-x86_64.pkg.tar.zst
+          asset_content_type: application/zstd
+
+      - name: Trigger Repo Update
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.REPO_TOKEN }}
+          repository: teamnebulaos/repo
+          event-type: package-updated
+          client-payload: '{"package": "nebula-software", "version": "${{ github.ref_name }}"}'
