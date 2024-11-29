@@ -1,0 +1,4 @@
+data/org.nebula.Software.desktop.in
+data/org.nebula.Software.gschema.xml
+src/window.py
+src/main.py
