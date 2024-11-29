@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="nebula-software">
+	<schema id="org.nebula.Software" path="/org/nebula/Software/">
+    <key name="window-width" type="i">
+      <default>800</default>
+    </key>
+    <key name="window-height" type="i">
+      <default>600</default>
+    </key>
+    <key name="window-maximized" type="b">
+      <default>false</default>
+    </key>
+    <key name="check-updates-on-startup" type="b">
+      <default>true</default>
+    </key>
+    <key name="last-check" type="s">
+      <default>''</default>
+    </key>
+  </schema>
+</schemalist>

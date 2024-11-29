@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="libadwaita" version="1.0"/>
+  <template class="NebulaSoftwareWindow" parent="AdwApplicationWindow">
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
+    <property name="title">Nebula Software</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="spacing">12</property>
+        <property name="margin-top">24</property>
+        <property name="margin-bottom">24</property>
+        <property name="margin-start">24</property>
+        <property name="margin-end">24</property>
+        <child>
+          <object class="GtkImage" id="banner_image">
+            <property name="height-request">200</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="vexpand">true</property>
+            <child>
+              <object class="GtkLabel" id="changelog_label">
+                <property name="wrap">true</property>
+                <property name="selectable">true</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">12</property>
+            <property name="halign">end</property>
+            <child>
+              <object class="GtkButton" id="refresh_button">
+                <property name="label">Refresh</property>
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="install_button">
+                <property name="label">Install</property>
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
