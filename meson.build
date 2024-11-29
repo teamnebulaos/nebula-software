@@ -8,5 +8,8 @@ dependency('libadwaita-1')
 dependency('json-glib-1.0')
 dependency('libsoup-3.0')
 
-subdir('src')
+pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
+moduledir = join_paths(pkgdatadir, 'nebula_software')
+
 subdir('data')
+subdir('src')
