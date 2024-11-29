@@ -6,6 +6,7 @@ import json
 import requests
 import os
 import subprocess
+from gettext import gettext as _
 
 @Gtk.Template(resource_path='/org/nebula/Software/window.ui')
 class NebulaSoftwareWindow(Adw.ApplicationWindow):
@@ -55,17 +56,17 @@ class NebulaSoftwareWindow(Adw.ApplicationWindow):
                 changelog_response = requests.get(changelog_url)
                 if changelog_response.status_code == 200:
                     update_type = self.update_manifest.get('release_type', 'update')
-                    changelog_text = f"New {update_type} available!\n\n"
+                    changelog_text = _("New {update_type} available!\n\n").format(update_type=update_type)
                     changelog_text += changelog_response.text
                     self.changelog_label.set_text(changelog_text)
                 
                 self.install_button.set_sensitive(True)
             else:
-                self.changelog_label.set_text("System is up to date")
+                self.changelog_label.set_text(_("System is up to date"))
                 self.install_button.set_sensitive(False)
 
         except Exception as e:
-            self.changelog_label.set_text(f"Error checking for updates: {str(e)}")
+            self.changelog_label.set_text(_("Error checking for updates: {error}").format(error=str(e)))
             self.install_button.set_sensitive(False)
 
     def on_refresh_clicked(self, button):
@@ -103,14 +104,14 @@ class NebulaSoftwareWindow(Adw.ApplicationWindow):
             for command in self.update_manifest.get('system_commands', []):
                 subprocess.run(['sudo', 'sh', '-c', command])
 
-            self.changelog_label.set_text("Update completed successfully!")
+            self.changelog_label.set_text(_("Update completed successfully!"))
             self.install_button.set_sensitive(False)
             
             # Update current version
             self.current_version = self.update_manifest['version']
             
         except Exception as e:
-            self.changelog_label.set_text(f"Error during update: {str(e)}")
+            self.changelog_label.set_text(_("Error during update: {error}").format(error=str(e)))
 
     def verify_checksum(self, content, expected_checksum):
         import hashlib
