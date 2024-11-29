@@ -1,3 +1,5 @@
+i18n = import('i18n')
+
 desktop_file = i18n.merge_file(
   input: 'org.nebula.Software.desktop.in',
   output: 'org.nebula.Software.desktop',
