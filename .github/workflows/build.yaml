@@ -2,14 +2,16 @@ name: Build and Release
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
   workflow_dispatch:
     inputs:
       version:
         description: 'Version to build (e.g. v1.0.0)'
-        required: true
-        default: 'v1.0.0'
+        required: false
+        default: ''
 
 jobs:
   build:
@@ -18,9 +20,20 @@ jobs:
       image: archlinux:base-devel
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.inputs.version || github.ref }}
+          fetch-depth: 0
+
+      - name: Set version
+        id: version
+        run: |
+          if [ "${{ github.event.inputs.version }}" != "" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          elif [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          else
+            echo "VERSION=v$(date +'%Y.%m.%d')" >> $GITHUB_ENV
+          fi
 
       - name: Install dependencies
         run: |
@@ -36,24 +49,16 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.event.inputs.version || github.ref }}
-          release_name: Release ${{ github.event.inputs.version || github.ref }}
+          tag_name: ${{ env.VERSION }}
+          name: Release ${{ env.VERSION }}
           draft: false
           prerelease: false
-
-      - name: Upload Package
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./*.pkg.tar.zst
-          asset_name: nebula-software-${{ github.event.inputs.version || github.ref_name }}-x86_64.pkg.tar.zst
-          asset_content_type: application/zstd
+          files: |
+            *.pkg.tar.zst
 
       - name: Trigger Repo Update
         uses: peter-evans/repository-dispatch@v2
@@ -61,4 +66,4 @@ jobs:
           token: ${{ secrets.REPO_TOKEN }}
           repository: teamnebulaos/repo
           event-type: package-updated
-          client-payload: '{"package": "nebula-software", "version": "${{ github.event.inputs.version || github.ref_name }}"}'
+          client-payload: '{"package": "nebula-software", "version": "${{ env.VERSION }}"}'
