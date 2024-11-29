@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Nebula Software
+Comment=Update Manager for NebulaOS
+Type=Application
+Exec=nebula-software
+Terminal=false
+Categories=System;
+Icon=@icon@
+StartupNotify=true
