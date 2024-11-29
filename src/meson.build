@@ -6,6 +6,7 @@ conf = configuration_data()
 conf.set('VERSION', meson.project_version())
 conf.set('localedir', join_paths(get_option('prefix'), get_option('localedir')))
 conf.set('pkgdatadir', pkgdatadir)
+conf.set('moduledir', moduledir)
 
 configure_file(
   input: 'nebula-software.in',
